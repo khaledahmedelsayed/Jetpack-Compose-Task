@@ -30,6 +30,7 @@ data class Movie    (
 }
 
 data class TheMovieDBResponse(
-    val results : List<Movie>
+    val results : List<Movie>? = null,
+    val page : Int? = 1
 )
 

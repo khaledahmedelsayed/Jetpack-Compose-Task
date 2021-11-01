@@ -15,11 +15,14 @@
  */
 package com.squadio.jetpackcomposetask.ui.navigation
 
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.squadio.jetpackcomposetask.data.MoviesRepository
+import com.squadio.jetpackcomposetask.entities.Movie
 import com.squadio.jetpackcomposetask.ui.navigation.Screens.Companion.MOVIE_ID
+import com.squadio.jetpackcomposetask.ui.screens.MovieDetails
 import com.squadio.jetpackcomposetask.ui.screens.MoviesList
 
 
@@ -43,11 +46,16 @@ fun NavigationGraph(startDestination: String) {
             composable(
                 route = Screens.MovieDetails().route,
                 content = {
-//                        MovieDetails(
-//                            movieId = it.arguments?.getString(MOVIE_ID),
-//                            onBackButtonClick = { navController.popBackStack() }
-//                        )
+                    var movie by remember { mutableStateOf(Movie()) }
+                    LaunchedEffect(null) {
+                        val movieId = it.arguments?.getString(MOVIE_ID)
+                        movie = MoviesRepository.getMovieDetails(movieId)
                     }
+                    MovieDetails(
+                        movie = movie,
+                        onBackButtonClick = { navController.popBackStack() }
+                    )
+                }
             )
         }
     }

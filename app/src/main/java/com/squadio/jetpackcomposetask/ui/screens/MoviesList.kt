@@ -15,87 +15,77 @@
  */
 package com.squadio.jetpackcomposetask.ui.screens
 
-import android.util.Log
+import androidx.compose.animation.*
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.paging.LoadState
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.items
 import com.squadio.jetpackcomposetask.R
 import com.squadio.jetpackcomposetask.data.MoviesRepository
 import com.squadio.jetpackcomposetask.entities.Movie
 import com.squadio.jetpackcomposetask.ui.components.MovieItem
 import com.squadio.jetpackcomposetask.utils.PullToRefresh
-import kotlinx.coroutines.*
 
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalAnimationApi::class)
 @Composable
 fun MoviesList(onMovieItemClicked: (movieId: String) -> Unit) {
-    var list by rememberSaveable { mutableStateOf(listOf<Movie>()) }
-    var isLoading by remember{ mutableStateOf(true) }
-    LaunchedEffect(null){
-        fetchMoviesList {
-        list = it
-        isLoading = false
-    }}
+    val list = MoviesRepository.getMoviesPagerAsFlow().collectAsLazyPagingItems()
+    var displayLoadingOverlay by remember{ mutableStateOf(false) }
+    var displayRefreshingIndicator by remember{ mutableStateOf(false) }
     PullToRefresh(
-        isRefreshing = isLoading,
-        onRefresh = {
-            isLoading = true
-            fetchMoviesList {
-                list = it
-                isLoading = false
-            }
-        },
+        isRefreshing = displayRefreshingIndicator,
+        onRefresh = { list.refresh() },
         content = {
-            LazyColumn(
-                content = {
-                    stickyHeader {
-                        Text(
-                            text = stringResource(R.string.movies_list_title),
-                            style = MaterialTheme.typography.h5,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 12.dp)
-                                .background(MaterialTheme.colors.background)
-                        )
-                    }
-                    items(list) { movie ->
-                        MovieItem(movie = movie, onMovieItemClicked = { onMovieItemClicked(it) })
+            Column(Modifier.fillMaxHeight()) {
+                Text(
+                    text = stringResource(R.string.movies_list_title),
+                    style = MaterialTheme.typography.h5,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 12.dp)
+                        .background(MaterialTheme.colors.background)
+                )
+                AnimatedVisibility(visible = displayLoadingOverlay, enter = fadeIn(), exit = fadeOut()) {
+                    Box(Modifier.fillMaxSize()) {
+                        CircularProgressIndicator(Modifier.align(Alignment.Center))
                     }
                 }
-            )
+                LazyColumn(
+                    modifier = Modifier.wrapContentHeight(),
+                    content = {
+                        items(list) { movie ->
+                            MovieItem(
+                                movie = movie ?: Movie(),
+                                onMovieItemClicked = { onMovieItemClicked(it) })
+                            list.apply {
+                                when {
+                                    loadState.refresh is LoadState.Loading -> displayLoadingOverlay = true
+                                    loadState.append is LoadState.Loading -> displayRefreshingIndicator = true
+                                    else -> {
+                                        displayLoadingOverlay = false
+                                        displayRefreshingIndicator = false
+                                    }
+                                }
+                            }
+                        }
+                    }
+                )
+            }
         }
     )
 }
-
-private fun fetchMoviesList(onMoviesListRetrieved: (List<Movie>) -> Unit) {
-    val job = Job()
-    val scope = CoroutineScope(Dispatchers.Main + job)
-    scope.launch(context = Dispatchers.IO) {
-        try {
-            val moviesResponse = MoviesRepository.getInstance().fetchMoviesList()
-            val moviesList = moviesResponse.body()!!.results
-            withContext(Dispatchers.Main){
-                onMoviesListRetrieved(moviesList)
-                job.complete()
-            }
-        } catch (e: Exception) {
-            Log.e("ApiError",e.message, e)
-            job.cancel()
-        }
-    }
-
-}
-
