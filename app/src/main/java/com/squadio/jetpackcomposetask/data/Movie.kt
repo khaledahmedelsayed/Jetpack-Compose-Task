@@ -13,17 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.squadio.jetpackcomposetask.entities
+package com.squadio.jetpackcomposetask.data
 
 import com.google.gson.annotations.SerializedName
 
 
-data class Movie    (
+data class Movie (
     val id: String? = null,
     val title: String? = null,
     @SerializedName("release_date") val releaseDate: String? = null,
     val overview : String? = null,
     @SerializedName("vote_average") val rating : Float? = null,
+    @SerializedName("popularity") val popularity : Float? = null,
     @SerializedName("poster_path") val imagePath : String? = null
 ){
     val imageUrl get() = "https://image.tmdb.org/t/p/w500/$imagePath"

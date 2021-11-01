@@ -28,22 +28,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
-import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.items
 import com.squadio.jetpackcomposetask.R
-import com.squadio.jetpackcomposetask.data.MoviesRepository
-import com.squadio.jetpackcomposetask.entities.Movie
+import com.squadio.jetpackcomposetask.data.Movie
 import com.squadio.jetpackcomposetask.ui.components.MovieItem
-import com.squadio.jetpackcomposetask.utils.PullToRefresh
+import com.squadio.jetpackcomposetask.ui.components.PullToRefresh
 
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalAnimationApi::class)
 @Composable
-fun MoviesList(onMovieItemClicked: (movieId: String) -> Unit) {
-    val list = MoviesRepository.getMoviesPagerAsFlow().collectAsLazyPagingItems()
+fun MoviesList(list : LazyPagingItems<Movie>, onMovieItemClicked: (movieId: String) -> Unit) {
     var displayLoadingOverlay by remember{ mutableStateOf(false) }
     var displayRefreshingIndicator by remember{ mutableStateOf(false) }
     PullToRefresh(

@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.dp
 import com.squadio.jetpackcomposetask.R
 import coil.compose.rememberImagePainter
 import com.gowtham.ratingbar.RatingBar
-import com.squadio.jetpackcomposetask.entities.Movie
+import com.squadio.jetpackcomposetask.data.Movie
 
 @Composable
 fun MovieItem(movie: Movie, onMovieItemClicked: (movieId: String) -> Unit) {
@@ -53,18 +53,18 @@ fun MovieItem(movie: Movie, onMovieItemClicked: (movieId: String) -> Unit) {
                 .padding(16.dp)
         ) {
 
-            Image(
-                modifier = Modifier
-                    .size(120.dp, 80.dp)
-                    .clip(RoundedCornerShape(16.dp)),
-                painter = rememberImagePainter(
-                    data = movie.imageUrl,
-                    builder = { placeholder(R.drawable.ic_launcher_background) }
-                ),
-                alignment = Alignment.CenterStart,
-                contentDescription = null,
-                contentScale = ContentScale.Crop
-            )
+                Image(
+                    modifier = Modifier
+                        .size(120.dp, 120.dp)
+                        .clip(RoundedCornerShape(16.dp)),
+                    painter = rememberImagePainter(
+                        data = movie.imageUrl,
+                        builder = { placeholder(R.drawable.ic_launcher_background) }
+                    ),
+                    alignment = Alignment.CenterStart,
+                    contentDescription = null,
+                    contentScale = ContentScale.FillBounds
+                )
 
             Spacer(modifier = Modifier.width(16.dp))
 

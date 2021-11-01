@@ -19,8 +19,9 @@ import androidx.compose.runtime.*
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.squadio.jetpackcomposetask.data.MoviesRepository
-import com.squadio.jetpackcomposetask.entities.Movie
+import com.squadio.jetpackcomposetask.data.Movie
 import com.squadio.jetpackcomposetask.ui.navigation.Screens.Companion.MOVIE_ID
 import com.squadio.jetpackcomposetask.ui.screens.MovieDetails
 import com.squadio.jetpackcomposetask.ui.screens.MoviesList
@@ -36,6 +37,7 @@ fun NavigationGraph(startDestination: String) {
                 route = Screens.MoviesList.route,
                 content = {
                     MoviesList(
+                        list = MoviesRepository.getMoviesPagerAsFlow().collectAsLazyPagingItems(),
                         onMovieItemClicked = { movieId ->
                             navigate(Screens.MovieDetails(movieId).route)
                         }

@@ -15,12 +15,9 @@
  */
 package com.squadio.jetpackcomposetask.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -31,35 +28,59 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.squadio.jetpackcomposetask.entities.Movie
+import coil.compose.rememberImagePainter
+import com.squadio.jetpackcomposetask.R
+import com.squadio.jetpackcomposetask.data.Movie
 
 @Composable
 fun MovieDetails(movie: Movie, onBackButtonClick: () -> Unit) {
     Column(
         Modifier
-            .background(color = MaterialTheme.colors.onPrimary)
             .fillMaxHeight()
             .verticalScroll(rememberScrollState()) // Behaves like ScrollView
     ) {
-//        Image(
-//            painter = painterResource("movie.image"),
-//            modifier = Modifier.fillMaxWidth(),
-//            contentDescription = "Cat image",
-//            contentScale = ContentScale.FillWidth
-//        )
+        Row(Modifier.fillMaxWidth()){
+            Image(
+                modifier = Modifier
+                    .size(200.dp, 300.dp)
+                    .padding(8.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                ,
+                painter = rememberImagePainter(
+                    data = movie.imageUrl,
+                    builder = { placeholder(R.drawable.ic_launcher_background) }
+                ),
+                alignment = Alignment.CenterStart,
+                contentDescription = null,
+                contentScale = ContentScale.Crop
+            )
+
+            Column(Modifier.wrapContentHeight().padding(8.dp)) {
+                Text("Score", color = Color.Gray, style = MaterialTheme.typography.h6)
+                Text(movie.rating.toString(), style = MaterialTheme.typography.h6)
+                Spacer(Modifier.height(40.dp))
+                Text("Rating", color = Color.Gray, style = MaterialTheme.typography.h6)
+                Text(movie.popularity.toString(), style = MaterialTheme.typography.h6)
+                Spacer(Modifier.height(40.dp))
+                Text("Release Date", color = Color.Gray, style = MaterialTheme.typography.h6)
+                Text(movie.releaseDate ?: "", style = MaterialTheme.typography.h6)
+            }
+
+        }
         Text(
             text = movie.title ?: "",
             Modifier.fillMaxWidth(),
-            style = MaterialTheme.typography.h3,
+            style = MaterialTheme.typography.h4,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center
         )
 
-        Text(text = "Overview:- ", modifier = Modifier.padding(start = 8.dp, top = 16.dp), style = MaterialTheme.typography.subtitle1, fontWeight = FontWeight.Bold)
         Text(
             text = movie.overview ?: "",
             modifier = Modifier
@@ -67,15 +88,14 @@ fun MovieDetails(movie: Movie, onBackButtonClick: () -> Unit) {
                 .padding(12.dp),
             style = MaterialTheme.typography.body1
         )
-        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-            Button(
-                modifier = Modifier
-                    .padding(20.dp)
-                    .clip(RoundedCornerShape(8.dp)),
-                onClick = { onBackButtonClick() }
-            ) {
-                Text(text = "Go back")
-            }
+        Button(
+            modifier = Modifier
+                .padding(20.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .align(Alignment.CenterHorizontally),
+            onClick = { onBackButtonClick() }
+        ) {
+            Text(text = "Go back")
         }
     }
 }
@@ -85,10 +105,11 @@ fun MovieDetails(movie: Movie, onBackButtonClick: () -> Unit) {
 fun MovieDetailsPreview() {
     MovieDetails(
         movie = Movie(
-            title = "Title",
-            releaseDate = "2021",
-            overview = "This is an overview, This is an overview, This is an overview",
-            rating = 4.7F
+            title = "Movie Title",
+            releaseDate = "2021-10-15",
+            overview = "This is an overview, This is an overview, This is an overview, This is an overview, This is an overview",
+            rating = 4.7F,
+            popularity = 155.661F
         ),
     onBackButtonClick = {})
 }

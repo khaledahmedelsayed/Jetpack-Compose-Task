@@ -22,7 +22,7 @@ import androidx.compose.material.Surface
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
-import com.squadio.jetpackcomposetask.utils.TransparentStatusBar
+import com.squadio.jetpackcomposetask.ui.components.TransparentStatusBar
 
 private val DarkColorPalette = darkColors(
     primary = purple200,

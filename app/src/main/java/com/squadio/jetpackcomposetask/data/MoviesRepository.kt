@@ -20,8 +20,6 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.squadio.jetpackcomposetask.entities.Movie
-import com.squadio.jetpackcomposetask.entities.TheMovieDBResponse
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
